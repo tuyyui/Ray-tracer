@@ -34,7 +34,7 @@ public:
                     pix_col = Vec3(0,0,100) + (red + white*dt) * 0.5; //(red + white*other) * 0.5;
                     clamp255(pix_col);
                     }
-                framebuffer[j * imageWidth + i] = objects[k].color;
+                framebuffer[j * imageWidth + i] = pix_col;
 
             }
         }
