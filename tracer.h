@@ -47,7 +47,7 @@ public:
         
         float min_t = 1000000;
         float t;
-                
+        // I will correct this later        
         Vec3 ray_origin = Vec3(x, y, 0);
         Vec3 ray_direction = Vec3(0, 0, 1);
                 
