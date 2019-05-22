@@ -1,5 +1,5 @@
-#ifndef Tracer_h
-#define Tracer_h
+#ifndef Scene_h
+#define Scene_h
 
 #include "objects.h"
 #include "color.h"
@@ -12,8 +12,9 @@ using namespace std;
 
 class Lightsource {
 public:
+	Vec3 position;
 	Color_t color;
-	Lightsource(Color_t color_ = Color_t(255,255,255)) : color(color_) {}
+	Lightsource(Vec3 position_, Color_t color_ = Color_t(255,255,255)) : position(position_), color(color_) {}
 };
 
 class Scene {
@@ -49,6 +50,13 @@ public:
 				return c;
 			}
 			case SPECULAR:
+			{
+				Color_t c = Color_t(0, 0, 0);
+				for (unsigned int i = 0; i < lightsources.size(); i++) {
+					c = c + lightsources[i]->color.scale_by(ray.reflect_by(normal).dot(lightsources[i]->position - intersect_point));
+				}
+				return c;
+			}
 			default:
 				throw exception("unrecognized texture");// UNRECOGNIZED_TEXTURE
 			}

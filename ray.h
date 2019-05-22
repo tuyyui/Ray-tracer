@@ -14,6 +14,9 @@ public:
 	Vec3 get_point(double t) const{
 		return origin + direction * t;
 	}
+	Vec3 reflect_by(const Vec3& normal) const{
+		return direction - normal * normal.dot(direction) * 2;
+	}
 	/* // these accessors are very inefficient, making copies
     Vec3 get_origin() const {
         return origin;

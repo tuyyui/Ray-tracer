@@ -1,5 +1,5 @@
-#ifndef Sphere_h
-#define Sphere_h
+#ifndef Objects_h
+#define Objects_h
 
 #include "color.h"
 #include "vect.h"
