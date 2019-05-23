@@ -14,6 +14,7 @@ class Lightsource {
 public:
 	Vec3 position;
 	Color_t color;
+	double intensity = 100;
 	Lightsource(Vec3 position_, Color_t color_ = Color_t(255,255,255)) : position(position_), color(color_) {}
 };
 
@@ -53,9 +54,17 @@ public:
 			{
 				Color_t c = Color_t(0, 0, 0);
 				for (unsigned int i = 0; i < lightsources.size(); i++) {
-					c = c + lightsources[i]->color.scale_by(ray.reflect_by(normal).dot(lightsources[i]->position - intersect_point));
+					Vec3 light2pos = lightsources[i]->position - intersect_point;
+					//specular:
+					c = c + lightsources[i]->color.scale_by2(ray.reflect_by(normal).dot(light2pos.normalize())); // add check for occlusion
+					//mat:
+					c = c + (object.color).mix_with(lightsources[i]->color).scale_by(lightsources[i]->intensity/(lightsources[i]->position - intersect_point).norm2());
 				}
+				//reflections:
+				if (depth > 0)
+					c = c + trace_ray(Ray(intersect_point, (ray.direction - normal * ray.direction.dot(normal) * 2).normalize()), &object, depth - 1);
 				return c;
+				
 			}
 			default:
 				throw exception("unrecognized texture");// UNRECOGNIZED_TEXTURE

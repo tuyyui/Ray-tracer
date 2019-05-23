@@ -43,6 +43,9 @@ public:
     double norm() const {
         return sqrt(dot(*this));
     }
+	double norm2() const {
+		return dot(*this);
+	}
     
     Vec3 normalize() {
         return (*this)*(1/norm());
