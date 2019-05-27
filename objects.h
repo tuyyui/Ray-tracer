@@ -42,7 +42,7 @@ public:
         const double c = v.dot(v) - Radius*Radius;
         double delta = b*b - 4 * c;
 
-		if (delta < 0) { // was 1e-4, why?
+		if (delta < 0) {
 			t = FLT_MAX; // no intersection, at 'infinity'
 			return false;
 		}
@@ -51,12 +51,11 @@ public:
         const double t2 = (-b + sqrt(delta))/2;
 
 		if (t2 < SELF_AVOID_T) { // the sphere is behind us
-			t = FLT_MAX; // no intersection, at 'infinity'
+			t = FLT_MAX; 
 			return false;
 		}
 
-        //t = (t1 < t2) ? t1 : t2; // get the first intersection only
-		t = (t1 >= SELF_AVOID_T) ? t1 : t2; // t1 is the first intersection, unless we're inside the sphere.
+		t = (t1 >= SELF_AVOID_T) ? t1 : t2; 
         
         return true;
     }
@@ -75,10 +74,6 @@ public:
 	Vec3 get_center() const {
 		return center;
 	}
-	// do we need this accessor?
-	//Vec3 get_direction() const {
-		//return direction;
-	//}
 
 	Vec3 get_normal(const Vec3& p) const {
 		Vec3 to_center = p - center;
@@ -95,7 +90,7 @@ public:
 
 		double delta = b * b - 4 * a * c;
 
-		if (delta < 0) { // was 1e-4, why?
+		if (delta < 0) { 
 			t = FLT_MAX; // no intersection, at 'infinity'
 			return false;
 		}
@@ -123,6 +118,17 @@ public:
 		t = FLT_MAX; // no intersection, at 'infinity'
 		return false;
 	}
+	/*
+	Circle bottom_circle() {
+		return Circle(center, direction, radius, color, texture);
+	}
+	Circle top_circle() {
+		return Circle(center+direction*height, direction, radius, color, texture);
+	}
+	static void create_capped_cylinder(Scene& scene) {
+		// create a cylinder and 2 circles?
+	}
+	*/
 };
 // Cone's still not correct.
 class Cone : public Object {
@@ -219,15 +225,14 @@ class Circle : public Plane {
 	double radius;
 public:
 	Circle(Vec3 center_, Vec3 direction_, double radius_, Color_t color, Texture_t texture = MAT) : radius(radius_), Plane(center_, direction_, color, texture) {}
-
-
+	
 	bool intersect(const Ray & ray, double& t) const {
-		if (!Plane::intersect(ray, t)) {
+		if (!Plane::intersect(ray, t)) { // the ray doesnt even hit the plane
 			return false;
 		}
 		Vec3 intersect_point = ray.get_point(t);
 		
-		if ((intersect_point - center).norm() > radius) { // intersects with plane outside circle
+		if ((intersect_point - center).norm2() > radius*radius) { // intersects with plane outside circle
 			t = FLT_MAX; 
 			return false;
 		}

@@ -5,7 +5,7 @@
 #include "color.h"
 #include <iostream>
 
-#include <vector>
+#include <list>
 
 
 using namespace std;
@@ -20,8 +20,8 @@ public:
 
 class Scene {
    
-    vector<Object*> objects;
-	vector<Lightsource*> lightsources;
+    list<Object*> objects;
+	list<Lightsource> lightsources;
 	//Camera camera;
 
 public:
@@ -31,8 +31,8 @@ public:
 		objects.push_back(object);
     }
 	
-	void add(Lightsource* object) {
-		lightsources.push_back(object);
+	void add(Lightsource light) {
+		lightsources.push_back(light);
 	}
 
     Color_t Shading(const Ray& ray, const Object& object, double t, int depth) {          
@@ -53,13 +53,13 @@ public:
 			case SPECULAR:
 			{
 				Color_t c = Color_t(0, 0, 0);
-				for (unsigned int i = 0; i < lightsources.size(); i++) {
-					Vec3 light2pos = lightsources[i]->position - intersect_point;
+				for (const Lightsource& light: lightsources){
+					Vec3 light2pos = light.position - intersect_point;
 					//specular:
-					if (check_occlusion(intersect_point, lightsources[i]->position)) {
-						c = c + lightsources[i]->color.scale_by2(ray.reflect_by(normal).dot(light2pos.normalize())); // add check for occlusion
+					if (check_occlusion(intersect_point, light.position)) {
+						c = c + light.color.scale_by2(ray.reflect_by(normal).dot(light2pos.normalize())); // add check for occlusion
 						//mat:
-						c = c + (object.color).mix_with(lightsources[i]->color).scale_by(lightsources[i]->intensity / (lightsources[i]->position - intersect_point).norm2());
+						c = c + (object.color).mix_with(light.color).scale_by(light.intensity / (light.position - intersect_point).norm2());
 					}
 				}
 				//reflections:
@@ -83,17 +83,20 @@ public:
 	Color_t trace_ray(const Ray& ray, const Object* exclude_obj, int depth) {
 		double min_t = FLT_MAX;
 		int min_i = -1;
+		const Object* nearest_obj = nullptr;
+
 		double t = FLT_MAX;
-		for (unsigned int i = 0; i < objects.size(); i++) {
-				if ((*objects[i]).intersect(ray, t)) {
+		for (const Object* object : objects) {
+				if ((*object).intersect(ray, t)) {
 					if (min_t > t) {
-						min_i = i;
+						nearest_obj = object;
+			
 						min_t = t;
 					}
 				}
 		}
-		if (min_i > -1) {
-			return Shading(ray, *objects[min_i], min_t, depth);
+		if (nearest_obj != nullptr) {
+			return Shading(ray, *nearest_obj, min_t, depth);
 		}
 		return Color_t(0, 0, 0);
 	}
@@ -103,17 +106,17 @@ public:
 		double t_light = toSource.norm();
 		Ray ray = Ray(target, toSource * (1.0 / t_light));
 		double min_t = t_light;
-		int min_i = -1;
+		const Object* nearest_obj = nullptr;
 		double t = FLT_MAX;
-		for (unsigned int i = 0; i < objects.size(); i++) {
-			if ((*objects[i]).intersect(ray, t)) {
+		for (const Object* object : objects) {		
+			if ((*object).intersect(ray, t)) {
 				if (min_t > t) {
-					min_i = i;
+					nearest_obj = object;
 					min_t = t;
 				}
 			}
 		}
-		return min_i == -1; // false if lightsource is occluded
+		return nearest_obj == nullptr; // false if lightsource is occluded
 	}
 };
 

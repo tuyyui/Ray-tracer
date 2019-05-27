@@ -44,7 +44,7 @@ int main() {
 	*/
 	scene.add(&circle1);
 	
-	scene.add(&light1);
+	scene.add(light1);
 
     ofstream my_Image ("image.ppm");
 
