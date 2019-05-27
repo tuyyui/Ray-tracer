@@ -26,7 +26,7 @@ int main() {
 	Cylinder cylinder1(Vec3(300, 90, 230), Vec3(0,1,0), 50, 275, Color_t(140, 255, 200), SPECULAR);
 	Cylinder cylinder2(Vec3(80, 365, 130), Vec3(0.3, -0.4, 1), 50, 275, Color_t(140, 255, 200), SPECULAR);
 
-	Lightsource light1 = Lightsource(Vec3(0, 0, 0));
+	Lightsource light1 = Lightsource(Vec3(0, 0, 0), Color_t(255,255,255));
     
     scene.add(&sphere1);
 	scene.add(&sphere2);

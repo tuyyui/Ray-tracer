@@ -15,7 +15,7 @@ public:
 	Vec3 position;
 	Color_t color;
 	double intensity = 100;
-	Lightsource(Vec3 position_, Color_t color_ = Color_t(255,255,255)) : position(position_), color(color_) {}
+	Lightsource(Vec3 position_, Color_t color_ = Color_t(255,255,255), double intensity_=100.0) : position(position_), color(color_), intensity(intensity_) {}
 };
 
 class Scene {
@@ -41,7 +41,7 @@ public:
     
 			switch (object.texture){ 
 			case MAT:
-				//cout << normal.dot(ray.direction) << "\n";
+				//This was chinkOfLight's formula
 				return (object.color).scale_by(normal.dot(ray.direction) * 0.5);
 			case REFLECTIVE:
 			{
@@ -56,9 +56,11 @@ public:
 				for (unsigned int i = 0; i < lightsources.size(); i++) {
 					Vec3 light2pos = lightsources[i]->position - intersect_point;
 					//specular:
-					c = c + lightsources[i]->color.scale_by2(ray.reflect_by(normal).dot(light2pos.normalize())); // add check for occlusion
-					//mat:
-					c = c + (object.color).mix_with(lightsources[i]->color).scale_by(lightsources[i]->intensity/(lightsources[i]->position - intersect_point).norm2());
+					if (check_occlusion(intersect_point, lightsources[i]->position)) {
+						c = c + lightsources[i]->color.scale_by2(ray.reflect_by(normal).dot(light2pos.normalize())); // add check for occlusion
+						//mat:
+						c = c + (object.color).mix_with(lightsources[i]->color).scale_by(lightsources[i]->intensity / (lightsources[i]->position - intersect_point).norm2());
+					}
 				}
 				//reflections:
 				if (depth > 0)
@@ -83,20 +85,37 @@ public:
 		int min_i = -1;
 		double t = FLT_MAX;
 		for (unsigned int i = 0; i < objects.size(); i++) {
-			//if (objects[i] != exclude_obj) {
 				if ((*objects[i]).intersect(ray, t)) {
 					if (min_t > t) {
 						min_i = i;
 						min_t = t;
 					}
 				}
-			//}
 		}
 		if (min_i > -1) {
 			return Shading(ray, *objects[min_i], min_t, depth);
 		}
 		return Color_t(0, 0, 0);
 	}
+	
+	bool check_occlusion(Vec3 target, Vec3 source) {
+		Vec3 toSource = source - target;
+		double t_light = toSource.norm();
+		Ray ray = Ray(target, toSource * (1.0 / t_light));
+		double min_t = t_light;
+		int min_i = -1;
+		double t = FLT_MAX;
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			if ((*objects[i]).intersect(ray, t)) {
+				if (min_t > t) {
+					min_i = i;
+					min_t = t;
+				}
+			}
+		}
+		return min_i == -1; // false if lightsource is occluded
+	}
 };
+
 
 #endif
