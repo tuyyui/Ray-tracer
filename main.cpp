@@ -26,15 +26,23 @@ int main() {
 	Cylinder cylinder1(Vec3(300, 90, 230), Vec3(0,1,0), 50, 275, Color_t(140, 255, 200), SPECULAR);
 	Cylinder cylinder2(Vec3(80, 365, 130), Vec3(0.3, -0.4, 1), 50, 275, Color_t(140, 255, 200), SPECULAR);
 
+	Cone cone1(Vec3(300, 90, 230), Vec3(0, 1, 0), 0.95, 275, Color_t(140, 255, 200), SPECULAR);
+
+	Circle circle1(Vec3(300, 90, 230), Vec3(0, 0, 1), 275, Color_t(140, 255, 200), SPECULAR);
+
 	Lightsource light1 = Lightsource(Vec3(0, 0, 0), Color_t(255,255,255));
     
     scene.add(&sphere1);
-	scene.add(&sphere2);
+	/*scene.add(&sphere2);
 	scene.add(&sphere3);
 	scene.add(&sphere4);
 	
 	scene.add(&cylinder1);
 	scene.add(&cylinder2);
+
+	scene.add(&cone1);
+	*/
+	scene.add(&circle1);
 	
 	scene.add(&light1);
 
