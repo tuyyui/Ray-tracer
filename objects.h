@@ -21,6 +21,7 @@ public:
 };
 
 class Sphere : public Object {
+	protected:
     Vec3 Center;
     double Radius;
 
@@ -63,6 +64,7 @@ public:
 
 
 class Cylinder : public Object {
+	protected:
 	Vec3 center;
 	Vec3 direction;
 	double radius;
@@ -132,6 +134,7 @@ public:
 };
 // Cone's still not correct.
 class Cone : public Object {
+	protected:
 	Vec3 center;
 	Vec3 direction;
 	double slope;
@@ -222,6 +225,7 @@ public:
 };
 
 class Circle : public Plane { 
+	protected:
 	double radius;
 public:
 	Circle(Vec3 center_, Vec3 direction_, double radius_, Color_t color, Texture_t texture = MAT) : radius(radius_), Plane(center_, direction_, color, texture) {}
